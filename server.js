@@ -1,4 +1,4 @@
-// server/server.js
+// server.js
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
@@ -8,18 +8,28 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-/* 1) App create */
+/* 1) App */
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 /* 2) Middlewares */
+const origins =
+  (process.env.CLIENT_ORIGIN && process.env.CLIENT_ORIGIN.split(",")) || "*";
+
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN?.split(",") || "*",
+    origin: origins,       // e.g. "https://your-frontend.vercel.app,https://78marketingagency.com"
+    credentials: false,    // no cookies in this API; set true only if needed
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// Handle CORS preflight quickly
+app.options("*", cors());
+
 app.use(morgan("dev"));
-app.use(express.json({ limit: "1mb" })); // <-- JSON bodies for /api/contact
+app.use(express.json({ limit: "1mb" }));
 
 /* 3) Multer (file uploads) */
 const upload = multer({
@@ -27,38 +37,27 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
 
-/* 4) Health */
+/* 4) Health check */
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
 /* 5) Checkout form (with file) */
 app.post("/api/send", upload.any(), async (req, res) => {
   try {
-    // Debug logs (optional)
-    console.log("BODY ===>", req.body);
-    console.log(
-      "FILES ===>",
-      req.files?.map((f) => ({
-        fieldname: f.fieldname,
-        originalname: f.originalname,
-        mimetype: f.mimetype,
-        size: f.size,
-      }))
-    );
+    const { name, email, phone, paymentMethod } = req.body || {};
 
-    const { name, email, phone, paymentMethod } = req.body;
     if (!name || !email || !paymentMethod) {
       return res
         .status(400)
-        .json({ ok: false, success: false, message: "Missing fields" });
+        .json({ ok: false, success: false, message: "Missing required fields" });
     }
 
     const file =
       Array.isArray(req.files) && req.files.length ? req.files[0] : null;
 
     const transporter = nodemailer.createTransport({
-      host: process.env.MAIL_HOST,
-      port: Number(process.env.MAIL_PORT || 587),
-      secure: false,
+      host: process.env.MAIL_HOST,                    // e.g. smtp.gmail.com
+      port: Number(process.env.MAIL_PORT || 587),     // usually 587
+      secure: false,                                   // TLS with 587
       auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS },
     });
 
@@ -95,10 +94,11 @@ app.post("/api/send", upload.any(), async (req, res) => {
   }
 });
 
-/* 6) Contact form (JSON only, no file) */
+/* 6) Contact form (JSON only) */
 app.post("/api/contact", async (req, res) => {
   try {
     const { firstName, lastName, email, phone, message } = req.body || {};
+
     if (!firstName || !email || !message) {
       return res
         .status(400)
@@ -138,7 +138,11 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
-/* 7) Start server */
-app.listen(PORT, () =>
-  console.log(`✅ Backend running on http://localhost:${PORT}`)
-);
+/* 7) Export for Vercel / Listen for local dev */
+if (!process.env.VERCEL) {
+  app.listen(PORT, () =>
+    console.log(`✅ Backend running on http://localhost:${PORT}`)
+  );
+}
+
+export default app;
