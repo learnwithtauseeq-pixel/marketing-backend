@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+html, body, #root {
+  height: 100%;
+}
+
+/* 👇 Global font */
+body {
+  font-family: 'Poppins', ui-sans-serif, system-ui, -apple-system;
+}
+
+/* 👇 Optional Tailwind base layer for headings */
+@layer base {
+  .font-heading {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  /* ✅ You can redefine body inside @layer base if you want Tailwind to compile it */
+  body {
+    @apply font-sans;
+    font-family: 'Poppins', ui-sans-serif, system-ui, -apple-system;
+  }
+}
+
