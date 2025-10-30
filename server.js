@@ -29,7 +29,7 @@ const PORT = process.env.PORT || 5000;
 // app.options("*", cors());
 
 app.use(cors({
-  origin: 'https://www.78marketingagency.com'
+  origin: '*'
 }))
 
 app.use(morgan("dev"));
@@ -42,7 +42,7 @@ const upload = multer({
 });
 
 /* 4) Health check */
-app.get("/api/health", (_req, res) => res.json({ ok: true }));
+app.get("/api/health", (_req, res) => res.json({ ok: true,  message: "Hello From Root Folder" }));
 
 /* 5) Checkout form (with file) */
 app.post("/api/send", upload.any(), async (req, res) => {
