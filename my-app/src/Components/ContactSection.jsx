@@ -24,7 +24,7 @@ export default function ContactSection() {
 
     try {
       setSending(true);
-      const res = await fetch("/api/contact", {
+      const res = await fetch("https://marketing-backend-jzp7yk4sv-tauseeqs-projects.vercel.app/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

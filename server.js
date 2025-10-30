@@ -13,20 +13,24 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 /* 2) Middlewares */
-const origins =
-  (process.env.CLIENT_ORIGIN && process.env.CLIENT_ORIGIN.split(",")) || "*";
+// const origins =
+//   (process.env.CLIENT_ORIGIN && process.env.CLIENT_ORIGIN.split(",")) || "*";
 
-app.use(
-  cors({
-    origin: origins,       // e.g. "https://your-frontend.vercel.app,https://78marketingagency.com"
-    credentials: false,    // no cookies in this API; set true only if needed
-    methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+// app.use(
+//   cors({
+//     origin: origins,       // e.g. "https://your-frontend.vercel.app,https://78marketingagency.com"
+//     credentials: false,    // no cookies in this API; set true only if needed
+//     methods: ["GET", "POST", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//   })
+// );
 
 // Handle CORS preflight quickly
-app.options("*", cors());
+// app.options("*", cors());
+
+app.use(cors({
+  origin: 'https://www.78marketingagency.com'
+}))
 
 app.use(morgan("dev"));
 app.use(express.json({ limit: "1mb" }));
