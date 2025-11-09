@@ -24,22 +24,50 @@ export default function ContactSection() {
 
     try {
       setSending(true);
-      const res = await fetch("https://marketing-backend-jzp7yk4sv-tauseeqs-projects.vercel.app/api/contact", {
+
+      const API_URL =
+        import.meta.env.VITE_API_URL ||
+        "https://marketing-backend-one.vercel.app";
+
+      console.log("Sending request to:", `${API_URL}/api/contact`);
+      console.log(" Form data:", form);
+
+      const res = await fetch(`${API_URL}/api/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      const json = await res.json().catch(() => ({}));
+
+      console.log(" Response status:", res.status);
+      console.log(" Response ok:", res.ok);
+
+      const responseText = await res.text();
+      console.log("Raw response:", responseText);
+
+      let json;
+      try {
+        json = responseText ? JSON.parse(responseText) : {};
+      } catch (parseError) {
+        console.error("❌ JSON parse error:", parseError);
+        json = {};
+      }
 
       if (res.ok && json?.ok) {
         alert("Thanks! Your message has been sent.");
-        setForm({ firstName: "", lastName: "", email: "", phone: "", message: "" });
+        setForm({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          message: "",
+        });
       } else {
         alert(json?.message || "Failed to send. Try again.");
+        console.error("Server error:", json);
       }
     } catch (err) {
-      console.error(err);
-      alert("Network error");
+      console.error("Network error:", err);
+      alert("Network error - check console for details");
     } finally {
       setSending(false);
     }
@@ -54,19 +82,41 @@ export default function ContactSection() {
             <div className="relative rounded-[26px] bg-[#0e0a16] border border-white/10 shadow-[0_30px_90px_rgba(0,0,0,0.45)] p-5 sm:p-6 md:p-8 lg:p-10 backdrop-blur overflow-hidden">
               {/* Animated Border Overlay */}
               <div className="absolute inset-0 rounded-[26px] overflow-hidden pointer-events-none">
-                <div className="absolute top-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-[#8b5cf6] to-transparent"
-                     style={{ width: "100%", animation: "slideTop 2s linear infinite" }} />
-                <div className="absolute top-0 right-0 w-[2px] bg-gradient-to-b from-transparent via-[#8b5cf6] to-transparent"
-                     style={{ height: "100%", animation: "slideRight 2s linear infinite" }} />
-                <div className="absolute bottom-0 right-0 h-[2px] bg-gradient-to-l from-transparent via-[#8b5cf6] to-transparent"
-                     style={{ width: "100%", animation: "slideBottom 2s linear infinite" }} />
-                <div className="absolute bottom-0 left-0 w-[2px] bg-gradient-to-t from-transparent via-[#8b5cf6] to-transparent"
-                     style={{ height: "100%", animation: "slideLeft 2s linear infinite" }} />
+                <div
+                  className="absolute top-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-[#8b5cf6] to-transparent"
+                  style={{
+                    width: "100%",
+                    animation: "slideTop 2s linear infinite",
+                  }}
+                />
+                <div
+                  className="absolute top-0 right-0 w-[2px] bg-gradient-to-b from-transparent via-[#8b5cf6] to-transparent"
+                  style={{
+                    height: "100%",
+                    animation: "slideRight 2s linear infinite",
+                  }}
+                />
+                <div
+                  className="absolute bottom-0 right-0 h-[2px] bg-gradient-to-l from-transparent via-[#8b5cf6] to-transparent"
+                  style={{
+                    width: "100%",
+                    animation: "slideBottom 2s linear infinite",
+                  }}
+                />
+                <div
+                  className="absolute bottom-0 left-0 w-[2px] bg-gradient-to-t from-transparent via-[#8b5cf6] to-transparent"
+                  style={{
+                    height: "100%",
+                    animation: "slideLeft 2s linear infinite",
+                  }}
+                />
               </div>
 
               {/* heading */}
               <h2 className="text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] font-extrabold leading-tight relative z-10">
-                <span className="text-white">Let&apos;s start a conversation</span>
+                <span className="text-white">
+                  Let&apos;s start a conversation
+                </span>
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#b493ff] to-[#7d54d6]">
                   Start your breakthrough now
@@ -76,7 +126,10 @@ export default function ContactSection() {
               </h2>
 
               {/* form */}
-              <form onSubmit={submit} className="mt-5 sm:mt-6 md:mt-7 space-y-3 sm:space-y-4 relative z-10">
+              <form
+                onSubmit={submit}
+                className="mt-5 sm:mt-6 md:mt-7 space-y-3 sm:space-y-4 relative z-10"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                   <Input
                     name="firstName"
@@ -140,10 +193,70 @@ export default function ContactSection() {
 
             {/* CSS Animations */}
             <style jsx>{`
-              @keyframes slideTop { 0%{transform:translateX(-100%);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateX(100%);opacity:0} }
-              @keyframes slideRight{ 0%{transform:translateY(-100%);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(100%);opacity:0} }
-              @keyframes slideBottom{0%{transform:translateX(100%);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateX(-100%);opacity:0}}
-              @keyframes slideLeft { 0%{transform:translateY(100%);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-100%);opacity:0} }
+              @keyframes slideTop {
+                0% {
+                  transform: translateX(-100%);
+                  opacity: 0;
+                }
+                10% {
+                  opacity: 1;
+                }
+                90% {
+                  opacity: 1;
+                }
+                100% {
+                  transform: translateX(100%);
+                  opacity: 0;
+                }
+              }
+              @keyframes slideRight {
+                0% {
+                  transform: translateY(-100%);
+                  opacity: 0;
+                }
+                10% {
+                  opacity: 1;
+                }
+                90% {
+                  opacity: 1;
+                }
+                100% {
+                  transform: translateY(100%);
+                  opacity: 0;
+                }
+              }
+              @keyframes slideBottom {
+                0% {
+                  transform: translateX(100%);
+                  opacity: 0;
+                }
+                10% {
+                  opacity: 1;
+                }
+                90% {
+                  opacity: 1;
+                }
+                100% {
+                  transform: translateX(-100%);
+                  opacity: 0;
+                }
+              }
+              @keyframes slideLeft {
+                0% {
+                  transform: translateY(100%);
+                  opacity: 0;
+                }
+                10% {
+                  opacity: 1;
+                }
+                90% {
+                  opacity: 1;
+                }
+                100% {
+                  transform: translateY(-100%);
+                  opacity: 0;
+                }
+              }
             `}</style>
           </div>
 
@@ -209,32 +322,67 @@ function InfoBlock({ label, value, href, icon }) {
     <div className="flex items-center justify-between gap-4 sm:gap-6 border-b border-white/10 pb-4 sm:pb-6">
       <div>
         <p className="text-xs sm:text-[13px] text-white/60">{label}</p>
-        <p className="mt-1 text-sm sm:text-[16px] md:text-[18px] font-semibold">{value}</p>
+        <p className="mt-1 text-sm sm:text-[16px] md:text-[18px] font-semibold">
+          {value}
+        </p>
       </div>
       <span className="shrink-0 grid place-items-center h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-[#3b2470] ring-2 ring-violet-500/30">
         {icon}
       </span>
     </div>
   );
-  if (href) return <a href={href} className="group block hover:opacity-95 transition">{content}</a>;
+  if (href)
+    return (
+      <a href={href} className="group block hover:opacity-95 transition">
+        {content}
+      </a>
+    );
   return <div className="block">{content}</div>;
 }
 
 /* ---------- Inline icons ---------- */
-function PhoneIcon({ className = "h-5 w-5" }) { return (
-  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M2 5a3 3 0 0 1 3-3h2l2 5-2 2a16 16 0 0 0 8 8l2-2 5 2v2a3 3 0 0 1-3 3h-1C9.163 22 2 14.837 2 6V5z" />
-  </svg>
-);}
-function MailIcon({ className = "h-5 w-5" }) { return (
-  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" />
-    <path d="M22 8 12 13 2 8" />
-  </svg>
-);}
-function PinIcon({ className = "h-5 w-5" }) { return (
-  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M12 22s7-5.33 7-12A7 7 0 0 0 5 10c0 6.67 7 12 7 12z" />
-    <circle cx="12" cy="10" r="3" />
-  </svg>
-);}
+function PhoneIcon({ className = "h-5 w-5" }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M2 5a3 3 0 0 1 3-3h2l2 5-2 2a16 16 0 0 0 8 8l2-2 5 2v2a3 3 0 0 1-3 3h-1C9.163 22 2 14.837 2 6V5z"
+      />
+    </svg>
+  );
+}
+function MailIcon({ className = "h-5 w-5" }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" />
+      <path d="M22 8 12 13 2 8" />
+    </svg>
+  );
+}
+function PinIcon({ className = "h-5 w-5" }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path d="M12 22s7-5.33 7-12A7 7 0 0 0 5 10c0 6.67 7 12 7 12z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+}
