@@ -106,7 +106,7 @@ app.post("/api/send", upload.any(), async (req, res) => {
 
     const mailOptions = {
       from: `"78 Marketing Agency" <${process.env.MAIL_USER}>`,
-      to: email || process.env.MAIL_USER,
+      to: process.env.MAIL_TO || process.env.MAIL_USER,
       subject: "New Payment Submission – TikTok Ads Account",
       html,
       attachments: file
@@ -203,7 +203,7 @@ app.post("/api/contact", async (req, res) => {
 
     const mailOptions = {
       from: `"78 Marketing Agency" <${process.env.MAIL_USER}>`,
-      to: email || process.env.MAIL_USER,
+      to: process.env.MAIL_TO || process.env.MAIL_USER,
       replyTo: email,
       subject: "New Contact Form Submission",
       html,

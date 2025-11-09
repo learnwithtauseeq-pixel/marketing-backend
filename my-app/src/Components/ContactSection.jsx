@@ -29,8 +29,8 @@ export default function ContactSection() {
         import.meta.env.VITE_API_URL ||
         "https://marketing-backend-one.vercel.app";
 
-      console.log("Sending request to:", `${API_URL}/api/contact`);
-      console.log(" Form data:", form);
+      // console.log("Sending request to:", `${API_URL}/api/contact`);
+      // console.log(" Form data:", form);
 
       const res = await fetch(`${API_URL}/api/contact`, {
         method: "POST",
@@ -38,11 +38,11 @@ export default function ContactSection() {
         body: JSON.stringify(form),
       });
 
-      console.log(" Response status:", res.status);
-      console.log(" Response ok:", res.ok);
+      // console.log(" Response status:", res.status);
+      // console.log(" Response ok:", res.ok);
 
       const responseText = await res.text();
-      console.log("Raw response:", responseText);
+      // console.log("Raw response:", responseText);
 
       let json;
       try {
